@@ -40,7 +40,7 @@ jobs:
           pip install -r requirements.txt
       
       - name: Run Black (Code Formatter)
-        run: black --check-only --dif .
+        run: black --check --diff .
 
       - name: Run isort (Import Sorter)
         run: isort --profile black --check-only --diff .
