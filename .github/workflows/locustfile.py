@@ -110,4 +110,3 @@ class TaskManagerUser(HttpUser):
 
         for file_path in static_files:
             self.client.get(file_path)
-            
