@@ -283,7 +283,7 @@ jobs:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: [integration-test, performance-test]
-    if: github.ref == 'refs/heads/develop' && github.event_name = 'push' # Só roda quando houver push para a branch develop
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push' # Só roda quando houver push para a branch develop
     environment:
       name: staging
       url: https://staging.taskmanager.com
