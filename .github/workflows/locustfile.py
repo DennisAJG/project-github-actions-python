@@ -99,6 +99,6 @@ class TaskManagerUser(HttpUser):
     def load_static_files(self):
         """Test loading static files"""
         static_files = ["/static/style.css", "/static/script.js"]
-
         for file_path in static_files:
             self.client.get(file_path)
+            
