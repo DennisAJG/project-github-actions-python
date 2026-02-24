@@ -1,4 +1,3 @@
-import json
 import random
 
 from locust import HttpUser, between, task
@@ -42,43 +41,52 @@ class TaskManagerUser(HttpUser):
         }
 
         response = self.client.post(
-            "/api/tasks", json=task_data, headers={"Content-Type": "application/json"}
+            "/api/tasks",
+            json=task_data,
+            headers={"Content-Type": "application/json"},
         )
 
-        if response.status_code == 200:
-            task_id = response.json().get("id")
+        if response.status_code in (200, 201):
+            data = response.json()
+            task_id = data.get("id") if isinstance(data, dict) else None
             if task_id:
                 self.task_ids.append(task_id)
 
     @task(2)
     def get_specific_task(self):
         """Test getting a specific task"""
-        if self.task_ids:
-            task_id = random.choice(self.task_ids)
-            self.client.get(f"/api/tasks/{task_id}")
+        if not self.task_ids:
+            return
+
+        task_id = random.choice(self.task_ids)
+        self.client.get(f"/api/tasks/{task_id}")
 
     @task(2)
     def update_task(self):
         """Test updating a task"""
-        if self.task_ids:
-            task_id = random.choice(self.task_ids)
-            update_data = {
-                "completed": random.choice([True, False]),
-                "priority": random.choice(["low", "medium", "high"]),
-            }
+        if not self.task_ids:
+            return
 
-            self.client.put(
-                f"/api/tasks/{task_id}",
-                json=update_data,
-                headers={"Content-Type": "application/json"},
-            )
+        task_id = random.choice(self.task_ids)
+        update_data = {
+            "completed": random.choice([True, False]),
+            "priority": random.choice(["low", "medium", "high"]),
+        }
+
+        self.client.put(
+            f"/api/tasks/{task_id}",
+            json=update_data,
+            headers={"Content-Type": "application/json"},
+        )
 
     @task(1)
     def delete_task(self):
         """Test deleting a task"""
-        if self.task_ids:
-            task_id = self.task_ids.pop()
-            self.client.delete(f"/api/tasks/{task_id}")
+        if not self.task_ids:
+            return
+
+        task_id = self.task_ids.pop()
+        self.client.delete(f"/api/tasks/{task_id}")
 
     @task(2)
     def filter_tasks(self):
